@@ -1,8 +1,9 @@
-certifi==2025.1.31
-charset-normalizer==3.4.1
-idna==3.10
-requests==2.32.3
-schedule==1.2.2
-urllib3==2.3.0
-windows-curses==2.4.1
-word2number==1.1
+Flask
+sentence-transformers
+scikit-learn
+pandas
+requests
+gunicorn
+schedule
+windows-curses
+word2number
