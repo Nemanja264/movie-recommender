@@ -56,11 +56,16 @@ class MovieRecommender:
     def convert_genres(self, genre_ids):
         return ' '.join([self.genres_map.get(gid, 'Unknown') for gid in genre_ids])
     
-    def build_similarity_matrix(self, column): # load it once(in file) no need to load it everytime
+    def build_similarity_matrix(self, column, batch_size=32): # load it once(in file) no need to load it everytime
         model = SentenceTransformer('all-MiniLM-L6-v2')
-        embeddings = model.encode(column.tolist(), show_progress_bar=True)
 
-        self.similarity = cosine_similarity(embeddings)
+        embeddings = [
+                embedding 
+                for i in range(0, len(column), batch_size)
+                for embedding in model.encode(column[i:i+batch_size], show_progress_bar=True)
+            ]
+
+        self.similarity = cosine_similarity(np.array(embeddings))
         #np.save("similarity_matrix.npy", self.similarity)
     
     def combine_columns(self, *column_names):
