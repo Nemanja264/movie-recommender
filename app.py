@@ -17,9 +17,9 @@ recommender = MovieRecommender(movie_df, genres_map)
 def index():
     return render_template('index.html')
 
-@app.route('/recommend_movie/<title>')
-def recommend_movies(title):
-    recommended_movies = recommender.recommend(title, 10)
+@app.route('/recommend_movie/<title>/<numRecs>')
+def recommend_movies(title, numRecs):
+    recommended_movies = recommender.recommend(title, int(numRecs))
 
     return jsonify(recommended_movies)
 
