@@ -7,8 +7,9 @@ class MovieRecommender:
     def __init__(self, df, genres_map):
         self.df = df.copy()
         self.genres_map = genres_map
-        self.similarity = np.load("similarity_matrix.npy")
+        self.similarity = None #np.load("similarity_matrix.npy")
         self.prepare_data()
+        self.build_similarity_matrix(self.df['combined'])
 
     def prepare_data(self):
         self.df['genres'] = self.df['genre_ids'].apply(self.convert_genres)
@@ -22,7 +23,6 @@ class MovieRecommender:
         self.df = self.df.drop(columns="release_date")
 
         self.combine_columns('title', 'release_year', 'genres', 'overview')
-
     
     def recommend(self, movie_title, top_n = 5):
         try:
