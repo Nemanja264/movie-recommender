@@ -33,15 +33,34 @@ p {
   width: 100%;
 }
 
-/* Input bar */
-.movie-input {
-  width: 60%;
+/* Input container styling */
+.input-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   max-width: 400px;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+/* Movie title input */
+.movie-input {
+  width: 80%;
   padding: 12px;
   font-size: 16px;
   border-radius: 6px;
   border: 1px solid #ccc;
-  margin-bottom: 10px;
+}
+
+/* Number of recommendations input */
+.numRecs-input {
+  width: 20%;
+  max-width: 150px;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  text-align: center;
 }
 
 /* Recommend button */
@@ -56,6 +75,7 @@ button {
   border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-top: 10px;
 }
 
 button:hover {
@@ -65,13 +85,13 @@ button:hover {
 
 /* Recommendations container */
 .movies-container {
-    margin-top: 20px;
-    background-color: #1e1e1e;
-    padding: 20px;
-    border-radius: 8px;
-    width: 80%;
-    max-width: 600px;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+  margin-top: 20px;
+  background-color: #1e1e1e;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 600px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
 }
 
 .movies-container p {
@@ -79,10 +99,8 @@ button:hover {
   font-size: 16px;
 }
 
-.link
-{
-    white-space: nowrap;
-    color: #dbb106;
-    margin-left: 8px;
+.link {
+  white-space: nowrap;
+  color: #dbb106;
+  margin-left: 8px;
 }
-  
