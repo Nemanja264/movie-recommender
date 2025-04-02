@@ -61,7 +61,7 @@ class MovieRecommender:
         embeddings = model.encode(column.tolist(), show_progress_bar=True)
 
         self.similarity = cosine_similarity(embeddings)
-        np.save("similarity_matrix.npy", self.similarity)
+        #np.save("similarity_matrix.npy", self.similarity)
     
     def combine_columns(self, *column_names):
         self.df['combined'] = ''
