@@ -37,7 +37,7 @@ def attach_imdb_links(movies):
 def load_movies(URL = BASE_URL):
     all_movies = []
 
-    for page in range(1,100):
+    for page in range(1,500):
         MOVIES_URL = f"{BASE_URL}&page={page}"
 
         try:
@@ -62,7 +62,7 @@ def load_genres(URL = GENRE_URL):
 
 movies = pd.DataFrame(load_movies())
 movies.to_csv("movies.csv", index=False)
-
+'''
 genres_map = load_genres()
 with open("genres", "w") as f:
-    json.dump(genres_map, f)
+    json.dump(genres_map, f)'''
