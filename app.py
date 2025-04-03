@@ -11,7 +11,7 @@ movie_df = pd.read_csv("movies.csv")
 with open("genres", "r") as f:
     genres_map = json.load(f)
 
-recommender = MovieRecommender(movie_df, genres_map)
+recommender = MovieRecommender(movie_df.copy().iloc[:4000].reset_index(drop=True), genres_map)
 
 @app.route('/')
 def index():
