@@ -4,6 +4,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 from scipy.sparse import csr_matrix, save_npz, load_npz
 import heapq
+import ast
 
 class MovieRecommender:
     def __init__(self, df, genres_map):
@@ -14,8 +15,9 @@ class MovieRecommender:
         #self.build_similarity_matrix(self.df['combined'])
 
     def prepare_data(self):
+        self.df['genre_ids'] = self.df['genre_ids'].apply(ast.literal_eval)
         self.df['genres'] = self.df['genre_ids'].apply(self.convert_genres)
-
+        
         self.df = self.df[['title', 'release_date', 'genres', 'imdb_url', 'overview']]
         self.df = self.df.drop_duplicates(subset=["title", "release_date"]).reset_index(drop=True)
 
@@ -27,15 +29,22 @@ class MovieRecommender:
         self.df = self.df.drop(columns="release_date")
 
         self.combine_columns('title', 'release_year', 'genres', 'overview')
-    
+
+    def find_movie(self, movie_title):
+        matches = self.df[self.df['title'] == movie_title]
+
+        if matches.empty:
+            matches = self.df[self.df['title'].str.contains(movie_title, case=False, na=False)]
+
+        if matches.empty:
+            print(f"Matches for {movie_title} were not found")
+            return None
+        
+        return matches.index[0]
+        
     def recommend(self, movie_title, top_n = 5):
         try:
-            matches = self.df[self.df['title'].str.contains(movie_title, case=False, na=False)]
-            if matches.empty:
-                print(f"Matches for {movie_title} were not found")
-                return None
-
-            ind = matches.index[0]
+            ind = self.find_movie(movie_title)
 
             start_idx = self.similarity.indptr[ind]
             end_idx = self.similarity.indptr[ind + 1]
@@ -64,7 +73,7 @@ class MovieRecommender:
 
 
     def convert_genres(self, genre_ids):
-        return ' '.join([self.genres_map.get(gid, 'Unknown') for gid in genre_ids])
+        return ' '.join([self.genres_map.get(str(gid), 'Unknown') for gid in genre_ids])
     
     def get_reduced_sim_matrix(self, sim_matrix, top_n = 100):
         reduced_sim_matrix = np.zeros_like(sim_matrix)
