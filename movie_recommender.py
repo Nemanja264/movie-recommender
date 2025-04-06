@@ -45,6 +45,8 @@ class MovieRecommender:
     def recommend(self, movie_title, top_n = 5):
         try:
             ind = self.find_movie(movie_title)
+            if ind is None:
+                return None
 
             start_idx = self.similarity.indptr[ind]
             end_idx = self.similarity.indptr[ind + 1]
