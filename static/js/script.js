@@ -95,9 +95,9 @@ async function recommendMovie()
 {
     try 
     {
-        const movieTitle = document.querySelector('.movie-input').value;
+        const movieTitle = document.querySelector('.movie-input').value.trim();
         let numRecs = document.querySelector('.numRecs-input').value;
-        if(movieTitle.trim() === ""){
+        if(movieTitle === ""){
             alert("Please enter movie title");
             return;
         }
