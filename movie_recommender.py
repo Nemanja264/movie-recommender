@@ -5,12 +5,13 @@ import numpy as np
 from scipy.sparse import csr_matrix, save_npz, load_npz
 import heapq
 import ast
+from db import get_movie_info, get_similar_movies, get_similar_movies_info
 
 class MovieRecommender:
     def __init__(self, df, genres_map):
         self.df = df.copy()
         self.genres_map = genres_map
-        self.similarity = load_npz("similarity_matrix.npz")
+        self.similarity = load_npz("similarity_matrix_tuned200.npz")
         self.prepare_data()
         #self.build_similarity_matrix(self.df['combined'])
 
@@ -18,7 +19,7 @@ class MovieRecommender:
         self.df['genre_ids'] = self.df['genre_ids'].apply(ast.literal_eval)
         self.df['genres'] = self.df['genre_ids'].apply(self.convert_genres)
         
-        self.df = self.df[['title', 'release_date', 'genres', 'imdb_url', 'overview']]
+        self.df = self.df[['id','title', 'release_date', 'genres', 'imdb_url', 'overview']]
         self.df = self.df.drop_duplicates(subset=["title", "release_date"]).reset_index(drop=True)
 
         self.df['release_year'] = pd.to_datetime(self.df["release_date"], errors="coerce").dt.year
@@ -47,27 +48,12 @@ class MovieRecommender:
             ind = self.find_movie(movie_title)
             if ind is None:
                 return None
+           
+            similar_movies = get_similar_movies(int(self.df.iloc[ind].id))[:top_n]
 
-            start_idx = self.similarity.indptr[ind]
-            end_idx = self.similarity.indptr[ind + 1]
-
-            movie_similarities = self.similarity.data[start_idx:end_idx]
-            movie_indices = self.similarity.indices[start_idx:end_idx]
-
-            sim_scores = list(zip(movie_indices, movie_similarities))
-
-            similar_movies = sorted(sim_scores, key=lambda x: x[1], reverse=True)[1:top_n + 1]
-
-            print(f"\nTop {top_n} movies similar to '{self.df.iloc[ind].title}':\n")
-
-            return [{
-                    "title": f"{self.df.iloc[i].title}",
-                    "release_year": f"{self.df.iloc[i].release_year}",
-                    "imdb_link": f"{self.df.iloc[i].imdb_url}",
-                    "similarity": float(round(score, 2))
-                    }
-                    for i, score in similar_movies
-                ]
+            movie_ids = [i for i,_ in similar_movies]
+            
+            return get_similar_movies_info(movie_ids)
         
         except Exception as e:
              print(f"Error in recommend(): {e}")
@@ -97,7 +83,7 @@ class MovieRecommender:
         return sparse_matrix
     
     def build_similarity_matrix(self, column, batch_size=32): # load it once(in file) no need to load it everytime
-        model = SentenceTransformer('all-MiniLM-L6-v2')
+        model = SentenceTransformer('movie_rec200')
 
         embeddings = [
                 embedding 
@@ -108,7 +94,7 @@ class MovieRecommender:
         sim_matrix = cosine_similarity(np.array(embeddings))
         self.similarity = self.get_sparse_sim_matrix(sim_matrix)
         
-        save_npz("similarity_matrix.npz", self.similarity)
+        save_npz("similarity_matrix_tuned200.npz", self.similarity)
     
 
     def combine_columns(self, *column_names):
